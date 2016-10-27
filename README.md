@@ -1,5 +1,13 @@
 # logspout
 
+## FORK INFO
+
+This is a fork of logspout, with the following changed merged in:
+
+- Prevent duplicate logs with BACKLOG=false: https://github.com/gliderlabs/logspout/pull/201
+- Filter containers by label: https://github.com/gliderlabs/logspout/pull/236
+- HTTP adapter: https://github.com/raychaser/logspout-http
+
 [![CircleCI](https://img.shields.io/circleci/project/gliderlabs/logspout/release.svg)](https://circleci.com/gh/gliderlabs/logspout)
 [![Docker Hub](https://img.shields.io/badge/docker-ready-blue.svg)](https://registry.hub.docker.com/u/gliderlabs/logspout/)
 [![IRC Channel](https://img.shields.io/badge/irc-%23gliderlabs-blue.svg)](https://kiwiirc.com/client/irc.freenode.net/#gliderlabs)
@@ -126,6 +134,47 @@ You can tell logspout to only display log entries since container "start" or "re
 The default behaviour is to output all logs since creation of the container (equivalent to `docker logs --tail=all` or simply `docker logs`).
 
 > NOTE: Use of this option **may** cause the first few lines of log output to be missed following a container being started, if the container starts outputting logs before logspout has a chance to see them. If consistent capture of *every* line of logs is critical to your application, you might want to test thorougly and/or avoid this option (at the expense of getting the entire backlog for every restarting container). This does not affect containers that are removed and recreated.
+
+
+#### HTTP Adapter
+
+This again assumes that the unique token for the Sumo Logic HTTP collector endpoint is in the environment as `$SUMO_HTTP_TOKEN`.
+
+```bash
+$ docker run -e DEBUG=1 \
+    -v /var/run/docker.sock:/tmp/docker.sock \
+    -e LOGSPOUT=ignore \
+    gliderlabs/logspout:latest \
+    https://collectors.sumologic.com?http.path=/receiver/v1/http/$SUMO_HTTP_TOKEN\&http.gzip=true
+```
+
+
+#### HTTP Adapter A Note On The Form Of The Route Parameter
+
+The route URI for an HTTP(S) endpoint should just include the hostname. The HTTP path currently has to specified as a parameter. For example, for Sumo Logic the endpoint URI with for an HTTP collector endpoint would look like this:
+
+```
+https://collectors.sumologic.com/receiver/v1/http/SUMO_HTTP_TOKEN
+```
+
+But for Logspout, it needs to be written like this:
+
+```
+https://collectors.sumologic.com?http.path=/receiver/v1/http/SUMO_HTTP_TOKEN
+```
+
+
+#### HTTP Adapter - Additional Parameters
+
+In addition to the `http.path` parameter discussed above, the following parameters are available:
+
+`http.buffer.capacity` controls the size of a buffer used to accumulate logs. The default capacity of the buffer is 100 logs.
+
+`http.buffer.timeout` indicates after how much time the adapter will send the logs accumulated in the buffer if the buffer capacity hasn't been reached. The default timeout is 1000ms (1s).
+
+If `http.gzip` is set to true, the logs will be compressed with GZIP. This is off by default, but for example supported by Sumo Logic.
+
+
 
 ## Modules
 
