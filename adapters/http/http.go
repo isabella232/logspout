@@ -101,7 +101,8 @@ type HTTPAdapter struct {
   totalMessageCount int
   bufferMutex       sync.Mutex
   useGzip           bool
-  crash       bool
+  crash             bool
+  labels            []string
 }
 
 // NewHTTPAdapter creates an HTTPAdapter
@@ -170,6 +171,13 @@ func NewHTTPAdapter(route *router.Route) (router.LogAdapter, error) {
     debug("http: don't crash, keep going")
   }
 
+  labels := []string{}
+  labelsString := getStringParameter(route.Options, "http.labels", "")
+  if labelsString != "" {
+    labels = strings.Split(labelsString, ",")
+    debug("http: including some labels", labels)
+  }
+
   // Make the HTTP adapter
   return &HTTPAdapter{
     route:    route,
@@ -181,6 +189,7 @@ func NewHTTPAdapter(route *router.Route) (router.LogAdapter, error) {
     timeout:  timeout,
     useGzip:  useGzip,
     crash:    crash,
+    labels:   labels,
   }, nil
 }
 
@@ -243,6 +252,7 @@ func (a *HTTPAdapter) flushHttp(reason string) {
       ID:       m.Container.ID,
       Image:    m.Container.Config.Image,
       Hostname: m.Container.Config.Hostname,
+      Labels:   labels,
     }
     message, err := json.Marshal(httpMessage)
     if err != nil {
@@ -328,11 +338,12 @@ func createRequest(url string, useGzip bool, payload string) *http.Request {
 
 // HTTPMessage is a simple JSON representation of the log message.
 type HTTPMessage struct {
-  Message  string `json:"message"`
-  Time     string `json:"time"`
-  Source   string `json:"source"`
-  Name     string `json:"docker_name"`
-  ID       string `json:"docker_id"`
-  Image    string `json:"docker_image"`
-  Hostname string `json:"docker_hostname"`
+  Message  string            `json:"message"`
+  Time     string            `json:"time"`
+  Source   string            `json:"source"`
+  Name     string            `json:"docker_name"`
+  ID       string            `json:"docker_id"`
+  Image    string            `json:"docker_image"`
+  Hostname string            `json:"docker_hostname"`
+  Labels   map[string]string `json:"labels"`
 }
