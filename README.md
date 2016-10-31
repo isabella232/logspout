@@ -7,6 +7,7 @@ This is a fork of logspout, with the following changed merged in:
 - Prevent duplicate logs with BACKLOG=false: https://github.com/gliderlabs/logspout/pull/201
 - Filter containers by label: https://github.com/gliderlabs/logspout/pull/236
 - HTTP adapter: https://github.com/raychaser/logspout-http
+- HTTP adapter can forward container labels
 
 [![CircleCI](https://img.shields.io/circleci/project/gliderlabs/logspout/release.svg)](https://circleci.com/gh/gliderlabs/logspout)
 [![Docker Hub](https://img.shields.io/badge/docker-ready-blue.svg)](https://registry.hub.docker.com/u/gliderlabs/logspout/)
@@ -145,7 +146,7 @@ $ docker run -e DEBUG=1 \
     -v /var/run/docker.sock:/tmp/docker.sock \
     -e LOGSPOUT=ignore \
     gliderlabs/logspout:latest \
-    https://collectors.sumologic.com?http.path=/receiver/v1/http/$SUMO_HTTP_TOKEN\&http.gzip=true
+    "https://collectors.sumologic.com?http.path=/receiver/v1/http/$SUMO_HTTP_TOKEN&http.gzip=true"
 ```
 
 
@@ -171,6 +172,16 @@ In addition to the `http.path` parameter discussed above, the following paramete
 `http.buffer.capacity` controls the size of a buffer used to accumulate logs. The default capacity of the buffer is 100 logs.
 
 `http.buffer.timeout` indicates after how much time the adapter will send the logs accumulated in the buffer if the buffer capacity hasn't been reached. The default timeout is 1000ms (1s).
+
+`http.labels` allows a comma-separated (see note on URL encoding) list of container labels to be included under the `labels` JSON key. e.g., to include the labels `foo` and `io.rancher.stack_service.name`:
+
+```bash
+$ docker run -e DEBUG=1 \
+    -v /var/run/docker.sock:/tmp/docker.sock \
+    -e LOGSPOUT=ignore \
+    gliderlabs/logspout:latest \
+    "https://collectors.sumologic.com?http.path=/receiver/v1/http/$SUMO_HTTP_TOKEN&http.gzip=true&http.labels=foo%2Cio.rancher.stack_service.name"
+```
 
 If `http.gzip` is set to true, the logs will be compressed with GZIP. This is off by default, but for example supported by Sumo Logic.
 

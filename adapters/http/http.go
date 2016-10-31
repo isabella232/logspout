@@ -244,6 +244,13 @@ func (a *HTTPAdapter) flushHttp(reason string) {
   messages := make([]string, 0, len(buffer))
   for i := range buffer {
     m := buffer[i]
+    labels := make(map[string]string)
+    for _,label := range a.labels {
+      labelValue := m.Container.Config.Labels[label]
+      if labelValue != "" {
+        labels[label] = labelValue
+      }
+    }
     httpMessage := HTTPMessage{
       Message:  m.Data,
       Time:     m.Time.Format(time.RFC3339),
