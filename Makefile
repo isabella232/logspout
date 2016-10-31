@@ -1,4 +1,4 @@
-NAME=logspout
+NAME=objectpartners/logspout
 VERSION=$(shell cat VERSION)
 
 dev:
@@ -15,14 +15,10 @@ dev:
 build:
 	mkdir -p build
 	docker build -t $(NAME):$(VERSION) .
-	docker save $(NAME):$(VERSION) | gzip -9 > build/$(NAME)_$(VERSION).tgz
 
 release:
-	rm -rf release && mkdir release
-	go get github.com/progrium/gh-release/...
-	cp build/* release
-	gh-release create gliderlabs/$(NAME) $(VERSION) \
-		$(shell git rev-parse --abbrev-ref HEAD) $(VERSION)
+	docker login -e $(DOCKER_EMAIL) -u $(DOCKER_USER) -p $(DOCKER_PASS)
+	docker push $(NAME):$(VERSION)
 
 circleci:
 	rm ~/.gitconfig
