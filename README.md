@@ -8,7 +8,6 @@ This is a fork of logspout, with the following changed merged in:
 - Filter containers by label: https://github.com/gliderlabs/logspout/pull/236
 - HTTP adapter: https://github.com/raychaser/logspout-http
 - HTTP adapter can forward container labels
-- Allow containers with TTY enabled (see https://github.com/gliderlabs/logspout/issues/72) using `-e ALLOW_TTY=true`
 
 [![CircleCI](https://img.shields.io/circleci/project/gliderlabs/logspout/release.svg)](https://circleci.com/gh/gliderlabs/logspout)
 [![Docker Hub](https://img.shields.io/badge/docker-ready-blue.svg)](https://registry.hub.docker.com/u/gliderlabs/logspout/)
