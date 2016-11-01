@@ -220,9 +220,13 @@ $ docker run --name logspout -d --volume=/var/run/docker.sock:/var/run/docker.so
 
 ## Contributing
 
-As usual, pull requests are welcome. You can also propose releases by opening a PR against the `release` branch from `master`. Please be sure to bump the version and update `CHANGELOG.md` and include your changelog text in the PR body.
+As usual, pull requests are welcome. 
 
 Discuss logspout development with us on Freenode in `#gliderlabs`.
+
+## Releasing
+
+Push a tag in the format `v#.#.#` - e.g., `v3.1.2`. A docker image will be built on Circle CI and tag pushed to Docker Hub.
 
 ## Sponsor
 
