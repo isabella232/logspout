@@ -153,11 +153,8 @@ func (p *LogsPump) pumpLogs(event *docker.APIEvents, backlog bool) {
 	container, err := p.client.InspectContainer(id)
 	assert(err, "pump")
 	if container.Config.Tty {
-		allowTty := getopt("ALLOW_TTY", "")
-   		if (allowTty != "true") {
-			debug("pump.pumpLogs():", id, "ignored: tty enabled")
-			return
-		}
+		debug("pump.pumpLogs():", id, "ignored: tty enabled")
+		return
 	}
 	if ignoreContainer(container) {
 		debug("pump.pumpLogs():", id, "ignored: environ ignore")
