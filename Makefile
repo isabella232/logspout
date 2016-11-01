@@ -1,5 +1,6 @@
 NAME=objectpartners/logspout
 VERSION=$(shell cat VERSION)
+CIRCLE_TAG ?= $(VERSION)
 
 dev:
 	@docker history $(NAME):dev &> /dev/null \
@@ -22,9 +23,7 @@ release:
 
 circleci:
 	rm ~/.gitconfig
-ifneq ($(CIRCLE_BRANCH), release)
-	echo build-$$CIRCLE_BUILD_NUM > VERSION
-endif
+	echo $(CIRCLE_TAG) > VERSION
 
 clean:
 	rm -rf build/
