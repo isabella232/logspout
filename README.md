@@ -218,6 +218,14 @@ $ docker run --name logspout -d --volume=/var/run/docker.sock:/var/run/docker.so
     syslog+tcp://logs-01.loggly.com:514
 ```
 
+### Test container
+
+This is a nice container to use for testing your logspout config, it will print out a log line every 3 seconds.
+
+```
+$ docker run --rm --name echo3 alpine:3.4 sh -c 'while true; do echo Hello, the time is $(date)!; sleep 3; done'
+```
+
 ## Contributing
 
 As usual, pull requests are welcome. 
